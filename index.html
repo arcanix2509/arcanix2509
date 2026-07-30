@@ -115,7 +115,6 @@
     import { 
       signInWithEmailAndPassword, 
       createUserWithEmailAndPassword, 
-      sendEmailVerification, 
       sendPasswordResetEmail, 
       setPersistence, 
       browserLocalPersistence, 
@@ -156,9 +155,9 @@
       alertBox.classList.add('hidden');
     };
 
-    // Auto Login Check
+    // Auto Login Check (Without Email Verification Guard)
     onAuthStateChanged(auth, (user) => {
-      if (user && user.emailVerified) {
+      if (user) {
         window.location.href = 'dashboard.html';
       } else {
         loader.classList.add('hidden');
@@ -173,17 +172,8 @@
       const remember = document.getElementById('rememberMe').checked;
 
       try {
-        // Set Local or Session Persistence based on "Remember Me"
         await setPersistence(auth, remember ? browserLocalPersistence : browserSessionPersistence);
-        
-        const userCredential = await signInWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-
-        if (!user.emailVerified) {
-          showAlert("Please verify your email before logging in. Check your inbox.");
-          return;
-        }
-
+        await signInWithEmailAndPassword(auth, email, password);
         window.location.href = 'dashboard.html';
       } catch (err) {
         showAlert(err.message.replace('Firebase: ', ''));
@@ -201,9 +191,6 @@
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
 
-        // Send Email Verification
-        await sendEmailVerification(user);
-
         // Generate procedural avatar URL
         const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
 
@@ -220,9 +207,11 @@
           createdAt: serverTimestamp()
         });
 
-        showAlert("Account created! Verification email sent. Please check your inbox before logging in.", false);
-        registerForm.reset();
-        setTimeout(() => document.getElementById('showLoginBtn').click(), 3000);
+        showAlert("Account created successfully! Redirecting...", false);
+        
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 1000);
 
       } catch (err) {
         showAlert(err.message.replace('Firebase: ', ''));
