@@ -2,62 +2,85 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Arcanix Hub - Dashboard</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans antialiased">
+<body class="bg-slate-950 text-slate-100 min-h-[100dvh] font-sans antialiased pb-20 sm:pb-0">
 
   <!-- Navbar -->
-  <nav class="border-b border-slate-800 bg-slate-900/50 backdrop-blur-md sticky top-0 z-50 px-6 py-4 flex justify-between items-center">
+  <nav class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-50 px-4 sm:px-6 py-3 flex justify-between items-center">
     <div class="flex items-center space-x-3">
-      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-xl shadow-lg shadow-cyan-500/20">A</div>
-      <span class="font-extrabold text-xl tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">ARCANIX</span>
+      <div class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-lg shadow-lg shadow-cyan-500/20">A</div>
+      <span class="font-extrabold text-base sm:text-xl tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">ARCANIX</span>
     </div>
-    <div class="flex items-center gap-6 text-sm font-semibold text-slate-400">
+
+    <!-- Desktop Navigation -->
+    <div class="hidden sm:flex items-center gap-6 text-sm font-semibold text-slate-400">
       <a href="dashboard.html" class="text-cyan-400 border-b-2 border-cyan-400 pb-1">Worlds</a>
       <a href="chat.html" class="hover:text-cyan-400 transition">Global Chat</a>
       <a href="profile.html" class="hover:text-cyan-400 transition">Profile</a>
       <button id="logoutBtn" class="bg-red-500/10 border border-red-500/30 text-red-400 px-4 py-1.5 rounded-lg hover:bg-red-500/20 transition">Logout</button>
     </div>
+
+    <!-- Mobile Header Quick Link -->
+    <button id="mobileLogoutBtn" class="sm:hidden w-8 h-8 flex items-center justify-center text-red-400 bg-red-500/10 rounded-lg border border-red-500/20">
+      <i class="fa-solid fa-right-from-bracket text-xs"></i>
+    </button>
   </nav>
 
   <!-- Container -->
-  <main class="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8 mt-4">
+  <main class="max-w-7xl mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mt-2 sm:mt-4">
     
-    <!-- User Card -->
-    <div class="bg-slate-900/60 border border-slate-800 backdrop-blur-xl rounded-2xl p-6 h-fit">
+    <!-- User Card (Clickable to Profile) -->
+    <a href="profile.html" class="block bg-slate-900/60 border border-slate-800 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 h-fit transition group">
       <div class="flex items-center gap-4">
-        <img id="dashAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Arcanix" class="w-16 h-16 rounded-full border-2 border-cyan-400 bg-slate-800 p-1">
-        <div>
-          <h2 id="dashUsername" class="text-lg font-bold text-white">Loading...</h2>
-          <p id="dashBio" class="text-xs text-slate-400 mt-1">Fetching survivor data...</p>
-          <span class="inline-flex items-center gap-1.5 mt-2 text-xs font-semibold text-emerald-400">
+        <img id="dashAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Arcanix" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-cyan-400 bg-slate-800 p-1 shrink-0">
+        <div class="overflow-hidden">
+          <h2 id="dashUsername" class="text-base sm:text-lg font-bold text-white truncate group-hover:text-cyan-400 transition">Loading...</h2>
+          <p id="dashBio" class="text-xs text-slate-400 mt-0.5 truncate">Fetching survivor data...</p>
+          <span class="inline-flex items-center gap-1.5 mt-2 text-[10px] sm:text-xs font-semibold text-emerald-400">
             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Online
           </span>
         </div>
       </div>
-    </div>
+    </a>
 
     <!-- Unity Live Worlds -->
-    <div class="lg:col-span-2 space-y-4">
-      <div class="flex justify-between items-center mb-2">
-        <h3 class="text-xl font-bold tracking-wide text-cyan-400 flex items-center gap-2">
-          <i class="fa-solid fa-server text-sm"></i> Live Unity Servers
+    <div class="lg:col-span-2 space-y-3 sm:space-y-4">
+      <div class="flex justify-between items-center mb-1">
+        <h3 class="text-base sm:text-xl font-bold tracking-wide text-cyan-400 flex items-center gap-2">
+          <i class="fa-solid fa-server text-xs sm:text-sm"></i> Live Unity Servers
         </h3>
-        <span class="text-xs text-slate-500">Auto-synced via Firestore</span>
+        <span class="text-[10px] sm:text-xs text-slate-500">Auto-synced via Firestore</span>
       </div>
 
-      <div id="worldsList" class="space-y-4">
+      <div id="worldsList" class="space-y-3">
         <!-- Dynamic Worlds Loading -->
-        <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-6 text-center text-slate-500">
+        <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-6 text-center text-slate-500 text-xs">
           Searching for active hosted worlds...
         </div>
       </div>
     </div>
 
   </main>
+
+  <!-- Mobile Bottom Navigation Bar -->
+  <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 backdrop-blur-xl z-40 flex justify-around p-2">
+    <a href="dashboard.html" class="flex flex-col items-center py-1 text-cyan-400 font-bold">
+      <i class="fa-solid fa-gamepad text-base"></i>
+      <span class="text-[10px] mt-0.5">Worlds</span>
+    </a>
+    <a href="chat.html" class="flex flex-col items-center py-1 text-slate-400">
+      <i class="fa-solid fa-comments text-base"></i>
+      <span class="text-[10px] mt-0.5">Chat</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center py-1 text-slate-400">
+      <i class="fa-solid fa-user text-base"></i>
+      <span class="text-[10px] mt-0.5">Profile</span>
+    </a>
+  </div>
 
   <script type="module">
     import { auth, db, requestNotificationPermission } from './firebase-config.js';
@@ -67,10 +90,10 @@
     onAuthStateChanged(auth, async (user) => {
       if (!user) return window.location.href = 'index.html';
 
-      // Ask Push Notification Permission
-      requestNotificationPermission();
+      if (typeof requestNotificationPermission === 'function') {
+        requestNotificationPermission();
+      }
 
-      // Load Profile Data
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
         const data = userDoc.data();
@@ -79,30 +102,29 @@
         document.getElementById('dashAvatar').src = data.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`;
       }
 
-      // Sync Active Worlds from Unity
       onSnapshot(collection(db, "worlds"), (snapshot) => {
         const container = document.getElementById('worldsList');
         container.innerHTML = '';
 
         if (snapshot.empty) {
-          container.innerHTML = `<div class="bg-slate-900/40 border border-slate-800 rounded-xl p-8 text-center text-slate-400">No active servers right now. Host a world from Unity game!</div>`;
+          container.innerHTML = `<div class="bg-slate-900/40 border border-slate-800 rounded-xl p-8 text-center text-slate-400 text-xs">No active servers right now. Host a world from Unity game!</div>`;
           return;
         }
 
-        snapshot.forEach((doc) => {
-          const w = doc.data();
+        snapshot.forEach((docSnap) => {
+          const w = docSnap.data();
           container.innerHTML += `
-            <div class="bg-slate-900/80 border border-slate-800 hover:border-cyan-500/50 rounded-xl p-5 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+            <div class="bg-slate-900/80 border border-slate-800/90 hover:border-cyan-500/50 rounded-xl p-4 sm:p-5 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
                 <div class="flex items-center gap-2">
-                  <h4 class="font-bold text-lg text-white">${w.worldName || 'Survival Realm'}</h4>
-                  <span class="text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded border border-cyan-500/30">${w.region || 'GLOBAL'}</span>
+                  <h4 class="font-bold text-sm sm:text-lg text-white">${w.worldName || 'Survival Realm'}</h4>
+                  <span class="text-[9px] sm:text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded border border-cyan-500/30">${w.region || 'GLOBAL'}</span>
                 </div>
                 <p class="text-xs text-slate-400 mt-1">Host: <span class="text-slate-200 font-semibold">${w.hostName || 'Unknown'}</span> | Ping: <span class="text-emerald-400">${w.ping || '30'}ms</span></p>
               </div>
-              <div class="flex items-center gap-4 w-full sm:w-auto justify-between sm:justify-end">
+              <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t border-slate-800/80 sm:border-none">
                 <span class="text-xs text-slate-400"><strong class="text-white">${w.playerCount || 1}</strong>/${w.maxPlayers || 4} Players</span>
-                <button onclick="joinWorld('${w.joinCode}')" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 text-slate-950 font-bold px-5 py-2 rounded-lg text-xs shadow-lg shadow-cyan-500/20 transition">
+                <button onclick="joinWorld('${w.joinCode}')" class="bg-gradient-to-r from-cyan-500 to-blue-600 hover:opacity-90 text-slate-950 font-bold px-4 py-2 rounded-lg text-xs shadow-lg shadow-cyan-500/20 transition active:scale-95">
                   JOIN WORLD
                 </button>
               </div>
@@ -112,12 +134,13 @@
     });
 
     window.joinWorld = (code) => {
-      // Direct Deep-link or Copy Relay Code for Unity
       navigator.clipboard.writeText(code);
       alert(`Relay Join Code "${code}" copied! Open Unity Game to connect.`);
     };
 
-    document.getElementById('logoutBtn').onclick = () => signOut(auth);
+    const handleLogout = () => signOut(auth);
+    document.getElementById('logoutBtn').onclick = handleLogout;
+    document.getElementById('mobileLogoutBtn').onclick = handleLogout;
   </script>
 </body>
 </html>
