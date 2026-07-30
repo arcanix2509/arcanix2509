@@ -2,215 +2,181 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>Arcanix - Global Chat</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Arcanix Hub - Global Chat</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    /* Custom scrollbar for mobile feel */
-    #messagesBox::-webkit-scrollbar {
+    #chatMessages::-webkit-scrollbar {
       width: 4px;
     }
-    #messagesBox::-webkit-scrollbar-thumb {
-      background: rgba(34, 211, 238, 0.2);
+    #chatMessages::-webkit-scrollbar-thumb {
+      background: rgba(100, 116, 139, 0.2);
       border-radius: 4px;
     }
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 h-[100dvh] flex flex-col font-sans overflow-hidden">
+<body class="bg-slate-950 text-slate-100 h-[100dvh] flex flex-col font-sans antialiased overflow-hidden pb-16 sm:pb-0">
 
-  <!-- Background Ambient Glow -->
-  <div class="fixed top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-
-  <!-- Header -->
-  <header class="bg-slate-900/90 border-b border-slate-800/80 backdrop-blur-md px-4 py-3 flex justify-between items-center z-20 shrink-0">
-    <div class="flex items-center gap-3">
-      <a href="dashboard.html" class="w-8 h-8 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 transition">
-        <i class="fa-solid fa-arrow-left text-xs"></i>
-      </a>
+  <!-- Navbar -->
+  <nav class="border-b border-slate-800/80 bg-slate-900/90 backdrop-blur-md sticky top-0 z-40 px-4 sm:px-6 py-3 flex justify-between items-center shrink-0">
+    <div class="flex items-center space-x-3">
+      <a href="dashboard.html" class="w-9 h-9 rounded-xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-lg shadow-lg shadow-cyan-500/20">A</a>
       <div>
-        <h1 class="text-base font-black tracking-wide text-cyan-400 flex items-center gap-2">
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Global Network Chat
-        </h1>
-        <p class="text-[10px] text-slate-400">Live communication channel</p>
+        <h1 class="font-black text-base sm:text-lg bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">GLOBAL CHAT</h1>
+        <p class="text-[10px] text-slate-400 -mt-1"><span class="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse"></span> Live Network</p>
       </div>
     </div>
-    <a href="profile.html" class="text-xs font-bold text-slate-400 hover:text-cyan-400 transition flex items-center gap-1">
-      <i class="fa-solid fa-user-gear"></i> <span class="hidden sm:inline">Profile</span>
-    </a>
-  </header>
 
-  <!-- Main Chat Container -->
-  <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-4 flex flex-col justify-between overflow-hidden relative">
+    <!-- Desktop Navigation -->
+    <div class="hidden sm:flex items-center gap-6 text-sm font-semibold text-slate-400">
+      <a href="dashboard.html" class="hover:text-cyan-400 transition">Worlds</a>
+      <a href="chat.html" class="text-cyan-400 border-b-2 border-cyan-400 pb-1">Global Chat</a>
+      <a href="profile.html" class="hover:text-cyan-400 transition">Profile</a>
+    </div>
+  </nav>
+
+  <!-- Chat Container -->
+  <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-between overflow-hidden relative">
     
     <!-- Messages Scrollable Box -->
-    <div id="messagesBox" class="flex-1 overflow-y-auto space-y-3 pr-1 pb-2">
-      <!-- Loading State -->
-      <div class="flex items-center justify-center h-full text-slate-500 text-xs font-semibold gap-2">
-        <div class="w-4 h-4 border-2 border-cyan-400 border-t-transparent rounded-full animate-spin"></div>
-        Connecting to stream...
+    <div id="chatMessages" class="flex-1 overflow-y-auto space-y-3 pr-1 pb-4 flex flex-col">
+      <div class="text-center text-xs text-slate-500 py-4">
+        Connecting to global chat stream...
       </div>
     </div>
 
-    <!-- Chat Controls Area -->
-    <div class="shrink-0 pt-2 z-10">
-      
-      <!-- Image Attached Bar -->
-      <div id="imgPreviewBar" class="hidden mb-2 text-xs bg-cyan-500/10 border border-cyan-500/30 text-cyan-300 px-3 py-1.5 rounded-xl flex items-center justify-between backdrop-blur-md">
-        <span class="truncate pr-2"><i class="fa-solid fa-image mr-1"></i> <span id="imgPreviewUrl">Image attached</span></span>
-        <button id="clearImgBtn" class="text-red-400 font-bold hover:text-red-300 px-1">✕</button>
-      </div>
-
-      <!-- Message Form -->
-      <form id="chatForm" class="bg-slate-900/90 border border-slate-800/90 rounded-2xl p-2 flex items-center gap-2 shadow-2xl backdrop-blur-xl">
-        <button type="button" id="attachUrlBtn" class="w-10 h-10 rounded-xl bg-slate-800/80 hover:bg-slate-800 text-slate-400 hover:text-cyan-400 flex items-center justify-center transition shrink-0" title="Attach Image URL">
-          <i class="fa-solid fa-paperclip text-sm"></i>
-        </button>
-
-        <input type="text" id="msgText" placeholder="Type a message..." autocomplete="off" class="flex-1 bg-transparent border-none text-sm text-white placeholder-slate-500 focus:outline-none px-2">
-
-        <button type="submit" id="sendBtn" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 flex items-center justify-center font-bold shadow-lg shadow-cyan-500/20 transition shrink-0 active:scale-95">
-          <i class="fa-solid fa-paper-plane text-sm"></i>
-        </button>
-      </form>
-    </div>
+    <!-- Message Input Bar -->
+    <form id="chatForm" class="mt-2 flex items-center gap-2 bg-slate-900/90 border border-slate-800 p-1.5 sm:p-2 rounded-2xl backdrop-blur-xl shadow-lg shrink-0">
+      <input type="text" id="messageInput" placeholder="Write a message..." required autocomplete="off"
+             class="flex-1 bg-transparent px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none">
+      <button type="submit" class="w-10 h-10 rounded-xl bg-gradient-to-tr from-cyan-500 to-blue-600 hover:opacity-90 text-slate-950 flex items-center justify-center transition active:scale-95 shrink-0">
+        <i class="fa-solid fa-paper-plane text-sm"></i>
+      </button>
+    </form>
 
   </main>
 
-  <!-- Firebase Chat Script -->
+  <!-- Mobile Bottom Navigation Bar -->
+  <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 backdrop-blur-xl z-40 flex justify-around p-2">
+    <a href="dashboard.html" class="flex flex-col items-center py-1 text-slate-400">
+      <i class="fa-solid fa-gamepad text-base"></i>
+      <span class="text-[10px] mt-0.5">Worlds</span>
+    </a>
+    <a href="chat.html" class="flex flex-col items-center py-1 text-cyan-400 font-bold">
+      <i class="fa-solid fa-comments text-base"></i>
+      <span class="text-[10px] mt-0.5">Chat</span>
+    </a>
+    <a href="profile.html" class="flex flex-col items-center py-1 text-slate-400">
+      <i class="fa-solid fa-user text-base"></i>
+      <span class="text-[10px] mt-0.5">Profile</span>
+    </a>
+  </div>
+
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { collection, addDoc, doc, getDoc, serverTimestamp, query, orderBy, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { collection, addDoc, query, orderBy, limit, onSnapshot, serverTimestamp, doc, getDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('messageInput');
+    
     let currentUser = null;
-    let currentUserData = null;
-    let activeImageUrl = null;
+    let userProfile = { username: 'Survivor', avatarUrl: '' };
 
-    // Helper: XSS Protection
-    function escapeHtml(str) {
-      if (!str) return '';
-      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-    }
-
-    // Format Timestamp to HH:MM AM/PM
-    function formatTime(timestamp) {
-      if (!timestamp) return 'Just now';
-      const date = timestamp.toDate ? timestamp.toDate() : new Date();
-      return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-    }
-
-    // Auth Guard & User Profile Fetch
     onAuthStateChanged(auth, async (user) => {
-      if (!user) {
-        window.location.href = 'index.html';
-      } else {
-        currentUser = user;
+      if (!user) return window.location.href = 'index.html';
+      currentUser = user;
+
+      // Fetch Logged In User Data from Firestore Database (Fixes "Survivor" Name Bug)
+      try {
         const userDoc = await getDoc(doc(db, "users", user.uid));
         if (userDoc.exists()) {
-          currentUserData = userDoc.data();
+          const data = userDoc.data();
+          userProfile.username = data.username || user.email.split('@')[0];
+          userProfile.avatarUrl = data.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`;
         }
-      }
-    });
-
-    // Attach Image Modal/Prompt
-    document.getElementById('attachUrlBtn').onclick = () => {
-      const url = prompt("Paste direct image URL (e.g. Imgur, PostImages, Discord):");
-      if (url && url.startsWith('http')) {
-        activeImageUrl = url;
-        document.getElementById('imgPreviewUrl').innerText = url;
-        document.getElementById('imgPreviewBar').classList.remove('hidden');
-      }
-    };
-
-    document.getElementById('clearImgBtn').onclick = () => {
-      activeImageUrl = null;
-      document.getElementById('imgPreviewBar').classList.add('hidden');
-    };
-
-    // Real-time Chat Sync
-    const q = query(collection(db, "globalChat"), orderBy("timestamp", "asc"));
-    
-    onSnapshot(q, (snapshot) => {
-      const box = document.getElementById('messagesBox');
-      box.innerHTML = '';
-
-      if (snapshot.empty) {
-        box.innerHTML = `<div class="text-center py-10 text-slate-500 text-xs">No messages yet. Start the conversation!</div>`;
-        return;
+      } catch (err) {
+        console.error("Error loading user profile:", err);
       }
 
-      snapshot.forEach(docSnap => {
-        const m = docSnap.data();
-        const isMe = currentUser && m.senderId === currentUser.uid;
-        
-        const safeName = escapeHtml(m.senderName || 'Survivor');
-        const safeText = escapeHtml(m.text || '');
-        const safeImg = escapeHtml(m.imageUrl || null);
-        const safeAvatar = escapeHtml(m.senderAvatar || `https://api.dicebear.com/7.x/bottts/svg?seed=${m.senderId}`);
-        const timeStr = formatTime(m.timestamp);
+      // Load Messages Stream
+      const q = query(collection(db, "global_chat"), orderBy("createdAt", "asc"), limit(100));
+      
+      onSnapshot(q, (snapshot) => {
+        chatMessages.innerHTML = '';
 
-        box.innerHTML += `
-          <div class="flex gap-2.5 items-end ${isMe ? 'flex-row-reverse' : 'flex-row'} mb-2">
-            <!-- User Avatar -->
-            <img src="${safeAvatar}" class="w-7 h-7 rounded-lg bg-slate-800 border border-slate-700/80 object-cover shrink-0">
+        if (snapshot.empty) {
+          chatMessages.innerHTML = `<div class="text-center text-xs text-slate-500 my-auto">No messages yet. Say hi!</div>`;
+          return;
+        }
 
-            <!-- Message Bubble -->
-            <div class="max-w-[78%] sm:max-w-md ${isMe ? 'bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-2xl rounded-br-none shadow-lg shadow-cyan-600/10' : 'bg-slate-900 border border-slate-800 text-slate-200 rounded-2xl rounded-bl-none'} p-3 text-xs sm:text-sm">
-              
-              <!-- Sender Name -->
-              <div class="text-[10px] font-extrabold ${isMe ? 'text-cyan-200' : 'text-cyan-400'} mb-1 flex justify-between items-center gap-3">
-                <span>${safeName}</span>
+        snapshot.forEach((docSnap) => {
+          const msg = docSnap.data();
+          const isMe = msg.uid === currentUser.uid;
+
+          const msgElement = document.createElement('div');
+          msgElement.className = `flex gap-2 items-end ${isMe ? 'justify-end' : 'justify-start'}`;
+
+          if (isMe) {
+            // RIGHT SIDE (Logged-in User)
+            msgElement.innerHTML = `
+              <div class="max-w-[78%] sm:max-w-[70%] space-y-1 text-right">
+                <div class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-2xl rounded-br-xs px-4 py-2.5 text-xs sm:text-sm shadow-md inline-block text-left break-words">
+                  ${escapeHTML(msg.text)}
+                </div>
+                <div class="text-[9px] text-slate-500 pr-1">You (${escapeHTML(userProfile.username)})</div>
               </div>
+            `;
+          } else {
+            // LEFT SIDE (Other Users)
+            msgElement.innerHTML = `
+              <img src="${msg.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + msg.username}" 
+                   class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800 shrink-0 mb-4">
+              <div class="max-w-[78%] sm:max-w-[70%] space-y-1">
+                <div class="text-[10px] font-bold text-slate-400 pl-1">${escapeHTML(msg.username || 'Survivor')}</div>
+                <div class="bg-slate-800/90 border border-slate-700/60 text-slate-100 rounded-2xl rounded-bl-xs px-4 py-2.5 text-xs sm:text-sm shadow-md inline-block break-words">
+                  ${escapeHTML(msg.text)}
+                </div>
+              </div>
+            `;
+          }
 
-              <!-- Message Image (if attached) -->
-              ${safeImg ? `<a href="${safeImg}" target="_blank" class="block mb-2 overflow-hidden rounded-xl border border-black/20"><img src="${safeImg}" class="max-h-52 w-full object-cover"></a>` : ''}
+          chatMessages.appendChild(msgElement);
+        });
 
-              <!-- Message Text -->
-              ${safeText ? `<p class="leading-relaxed break-words">${safeText}</p>` : ''}
-
-              <!-- Message Timestamp -->
-              <span class="text-[9px] ${isMe ? 'text-cyan-100/70' : 'text-slate-500'} block text-right mt-1.5 font-medium">${timeStr}</span>
-            </div>
-          </div>`;
+        // Auto Scroll to Bottom
+        chatMessages.scrollTop = chatMessages.scrollHeight;
       });
-
-      // Auto Scroll to Bottom on new message
-      box.scrollTop = box.scrollHeight;
     });
 
-    // Send Message Handler
-    document.getElementById('chatForm').onsubmit = async (e) => {
+    // Send Message Event
+    chatForm.onsubmit = async (e) => {
       e.preventDefault();
-      if (!currentUser) return;
+      const text = messageInput.value.trim();
+      if (!text || !currentUser) return;
 
-      const input = document.getElementById('msgText');
-      const text = input.value.trim();
-
-      if (!text && !activeImageUrl) return;
-
-      const name = currentUserData?.username || currentUser.displayName || 'Survivor';
-      const avatar = currentUserData?.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${currentUser.uid}`;
-
-      // Reset UI input instantly for fast typing
-      input.value = '';
-      const imgToSend = activeImageUrl;
-      activeImageUrl = null;
-      document.getElementById('imgPreviewBar').classList.add('hidden');
+      messageInput.value = '';
 
       try {
-        await addDoc(collection(db, "globalChat"), {
-          senderId: currentUser.uid,
-          senderName: name,
-          senderAvatar: avatar,
+        await addDoc(collection(db, "global_chat"), {
           text: text,
-          imageUrl: imgToSend,
-          timestamp: serverTimestamp()
+          uid: currentUser.uid,
+          username: userProfile.username, // Sends actual username stored in Firestore database
+          avatarUrl: userProfile.avatarUrl,
+          createdAt: serverTimestamp()
         });
       } catch (err) {
         console.error("Error sending message:", err);
       }
     };
+
+    function escapeHTML(str) {
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
   </script>
 </body>
 </html>
