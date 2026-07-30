@@ -2,65 +2,65 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
   <title>Arcanix Hub - Authentication</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen font-sans flex items-center justify-center p-4">
+<body class="bg-slate-950 text-slate-100 min-h-[100dvh] font-sans flex items-center justify-center p-3 sm:p-6 overflow-x-hidden">
 
   <!-- Background Glow FX -->
-  <div class="fixed top-1/4 left-1/4 w-96 h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
-  <div class="fixed bottom-1/4 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed top-1/4 left-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-cyan-500/10 rounded-full blur-3xl pointer-events-none"></div>
+  <div class="fixed bottom-1/4 right-1/4 w-72 h-72 sm:w-96 sm:h-96 bg-purple-600/10 rounded-full blur-3xl pointer-events-none"></div>
 
-  <!-- Loading Overlay for Auto-Login check -->
-  <div id="loader" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center gap-4">
+  <!-- Loading Overlay -->
+  <div id="loader" class="fixed inset-0 bg-slate-950 z-50 flex flex-col items-center justify-center gap-4 p-4 text-center">
     <div class="w-12 h-12 border-4 border-cyan-500/20 border-t-cyan-400 rounded-full animate-spin"></div>
-    <p class="text-sm text-cyan-400 tracking-wider font-semibold animate-pulse">CONNECTING TO ARCANIX NETWORK...</p>
+    <p class="text-xs sm:text-sm text-cyan-400 tracking-wider font-semibold animate-pulse">CONNECTING TO ARCANIX NETWORK...</p>
   </div>
 
   <!-- Auth Card -->
-  <div class="w-full max-w-md bg-slate-900/80 border border-slate-800 backdrop-blur-2xl rounded-3xl p-8 shadow-2xl shadow-cyan-950/20 relative z-10">
+  <div class="w-full max-w-md bg-slate-900/80 border border-slate-800/90 backdrop-blur-2xl rounded-3xl p-5 sm:p-8 shadow-2xl relative z-10 my-auto">
     
     <!-- Brand Header -->
-    <div class="text-center mb-8">
+    <div class="text-center mb-6 sm:mb-8">
       <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-cyan-500 to-purple-600 flex items-center justify-center font-black text-2xl mx-auto mb-3 shadow-lg shadow-cyan-500/30">A</div>
-      <h1 class="text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">ARCANIX HUB</h1>
+      <h1 class="text-xl sm:text-2xl font-black tracking-wider bg-clip-text text-transparent bg-gradient-to-r from-cyan-400 to-purple-400">ARCANIX HUB</h1>
       <p id="authSubtitle" class="text-xs text-slate-400 mt-1">Enter your credentials to access the survival network</p>
     </div>
 
-    <!-- Alert / Message Box -->
-    <div id="alertBox" class="hidden mb-6 p-3 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
+    <!-- Alert Box -->
+    <div id="alertBox" class="hidden mb-5 p-3 rounded-xl text-xs font-semibold flex items-center gap-2"></div>
 
     <!-- LOGIN FORM -->
     <form id="loginForm" class="space-y-4">
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
+        <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
         <div class="relative">
           <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
           <input type="email" id="loginEmail" required placeholder="player@arcanix.com" 
-                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Password</label>
+        <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
         <div class="relative">
           <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
           <input type="password" id="loginPassword" required placeholder="••••••••" 
-                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
       </div>
 
-      <div class="flex items-center justify-between text-xs">
+      <div class="flex items-center justify-between text-xs pt-1">
         <label class="flex items-center gap-2 text-slate-400 cursor-pointer">
-          <input type="checkbox" id="rememberMe" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0">
+          <input type="checkbox" id="rememberMe" class="rounded bg-slate-800 border-slate-700 text-cyan-500 focus:ring-0 w-4 h-4">
           <span>Remember Me</span>
         </label>
         <button type="button" id="forgotPassBtn" class="text-cyan-400 hover:underline">Forgot Password?</button>
       </div>
 
-      <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black py-3 rounded-xl shadow-lg shadow-cyan-500/20 tracking-wider transition transform hover:scale-[1.01] active:scale-[0.99]">
+      <button type="submit" class="w-full bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-black py-3.5 rounded-xl shadow-lg shadow-cyan-500/20 tracking-wider transition active:scale-95 text-xs sm:text-sm mt-2">
         LOG IN
       </button>
 
@@ -69,36 +69,36 @@
       </p>
     </form>
 
-    <!-- REGISTER FORM (Hidden by default) -->
+    <!-- REGISTER FORM -->
     <form id="registerForm" class="space-y-4 hidden">
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Username</label>
+        <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Username</label>
         <div class="relative">
           <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-500 text-sm"></i>
           <input type="text" id="regUsername" required placeholder="CyberKnight" 
-                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Email Address</label>
+        <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Email Address</label>
         <div class="relative">
           <i class="fa-solid fa-envelope absolute left-4 top-3.5 text-slate-500 text-sm"></i>
           <input type="email" id="regEmail" required placeholder="player@arcanix.com" 
-                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
       </div>
 
       <div>
-        <label class="block text-xs font-bold text-slate-300 uppercase tracking-wider mb-2">Password</label>
+        <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Password</label>
         <div class="relative">
           <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
           <input type="password" id="regPassword" required placeholder="Min. 6 characters" 
-                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-2.5 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
+                 class="w-full bg-slate-800/80 border border-slate-700/80 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 transition">
         </div>
       </div>
 
-      <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-slate-950 font-black py-3 rounded-xl shadow-lg shadow-purple-500/20 tracking-wider transition transform hover:scale-[1.01] active:scale-[0.99]">
+      <button type="submit" class="w-full bg-gradient-to-r from-purple-500 to-cyan-500 hover:from-purple-400 hover:to-cyan-400 text-slate-950 font-black py-3.5 rounded-xl shadow-lg shadow-purple-500/20 tracking-wider transition active:scale-95 text-xs sm:text-sm mt-2">
         REGISTER NOW
       </button>
 
@@ -109,7 +109,6 @@
 
   </div>
 
-  <!-- Firebase Authentication Script -->
   <script type="module">
     import { auth, db } from './firebase-config.js';
     import { 
@@ -129,7 +128,6 @@
     const alertBox = document.getElementById('alertBox');
     const authSubtitle = document.getElementById('authSubtitle');
 
-    // UI Helper Functions
     function showAlert(msg, isError = true) {
       alertBox.classList.remove('hidden', 'bg-red-500/20', 'border-red-500/30', 'text-red-400', 'bg-emerald-500/20', 'border-emerald-500/30', 'text-emerald-400');
       if (isError) {
@@ -140,7 +138,6 @@
       alertBox.innerHTML = `<i class="fa-solid ${isError ? 'fa-circle-exclamation' : 'fa-circle-check'}"></i> ${msg}`;
     }
 
-    // Form Toggle Listeners
     document.getElementById('showRegisterBtn').onclick = () => {
       loginForm.classList.add('hidden');
       registerForm.classList.remove('hidden');
@@ -155,7 +152,6 @@
       alertBox.classList.add('hidden');
     };
 
-    // Auto Login Check (Without Email Verification Guard)
     onAuthStateChanged(auth, (user) => {
       if (user) {
         window.location.href = 'dashboard.html';
@@ -164,7 +160,6 @@
       }
     });
 
-    // 1. LOGIN
     loginForm.onsubmit = async (e) => {
       e.preventDefault();
       const email = document.getElementById('loginEmail').value.trim();
@@ -180,7 +175,6 @@
       }
     };
 
-    // 2. REGISTER
     registerForm.onsubmit = async (e) => {
       e.preventDefault();
       const username = document.getElementById('regUsername').value.trim();
@@ -190,11 +184,8 @@
       try {
         const userCredential = await createUserWithEmailAndPassword(auth, email, password);
         const user = userCredential.user;
-
-        // Generate procedural avatar URL
         const avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(username)}`;
 
-        // Create User document in Firestore
         await setDoc(doc(db, "users", user.uid), {
           uid: user.uid,
           username: username,
@@ -208,17 +199,13 @@
         });
 
         showAlert("Account created successfully! Redirecting...", false);
-        
-        setTimeout(() => {
-          window.location.href = 'dashboard.html';
-        }, 1000);
+        setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
 
       } catch (err) {
         showAlert(err.message.replace('Firebase: ', ''));
       }
     };
 
-    // 3. FORGOT PASSWORD
     document.getElementById('forgotPassBtn').onclick = async () => {
       const email = prompt("Enter your email address to reset password:");
       if (email) {
