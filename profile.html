@@ -105,8 +105,13 @@
         </div>
 
         <div>
-          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Profile Picture (Image URL)</label>
-          <input type="url" id="editAvatarUrl" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Paste image link (e.g., https://site.com/avatar.jpg)">
+          <div class="flex items-center justify-between mb-1.5">
+            <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider">Profile Picture (Image URL)</label>
+            <a href="https://phototourl.com/" target="_blank" rel="noopener noreferrer" class="text-[10px] text-cyan-400 hover:underline flex items-center gap-1 font-semibold">
+              Convert photo to URL <i class="fa-solid fa-arrow-up-right-from-square text-[9px]"></i>
+            </a>
+          </div>
+          <input type="url" id="editAvatarUrl" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Paste image link (e.g., https://phototourl.com/...)">
         </div>
 
         <div>
