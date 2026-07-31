@@ -95,6 +95,11 @@
       </h2>
       <form id="editForm" class="space-y-4">
         <div>
+          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Username</label>
+          <input type="text" id="editUsername" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Enter new username" required>
+        </div>
+
+        <div>
           <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Bio</label>
           <textarea id="editBio" rows="3" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Tell something about yourself..."></textarea>
         </div>
@@ -165,6 +170,7 @@
           document.getElementById('userXp').innerText = xp;
           document.getElementById('xpBar').style.width = `${Math.min(xp, 100)}%`;
           document.getElementById('editBio').value = data.bio || '';
+          document.getElementById('editUsername').value = data.username || '';
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -176,12 +182,16 @@
 
     document.getElementById('editForm').onsubmit = async (e) => {
       e.preventDefault();
+      const newUsername = document.getElementById('editUsername').value.trim();
       const newBio = document.getElementById('editBio').value.trim();
       const avatarSeed = document.getElementById('editAvatarSeed').value.trim();
 
       try {
         const userRef = doc(db, "users", currentUser.uid);
-        const updateData = { bio: newBio };
+        const updateData = { 
+          username: newUsername,
+          bio: newBio 
+        };
         if (avatarSeed) {
           updateData.avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(avatarSeed)}`;
         }
