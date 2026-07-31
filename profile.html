@@ -105,8 +105,13 @@
         </div>
 
         <div>
-          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Avatar Seed (Keyword)</label>
-          <input type="text" id="editAvatarSeed" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Type anything to change avatar">
+          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Profile Picture (Image URL)</label>
+          <input type="url" id="editAvatarUrl" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Paste image link (e.g., https://site.com/avatar.jpg)">
+        </div>
+
+        <div>
+          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">OR Avatar Seed (Keyword)</label>
+          <input type="text" id="editAvatarSeed" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Type anything to generate avatar">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
@@ -171,6 +176,7 @@
           document.getElementById('xpBar').style.width = `${Math.min(xp, 100)}%`;
           document.getElementById('editBio').value = data.bio || '';
           document.getElementById('editUsername').value = data.username || '';
+          document.getElementById('editAvatarUrl').value = data.avatarUrl && !data.avatarUrl.includes('dicebear') ? data.avatarUrl : '';
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
@@ -184,6 +190,7 @@
       e.preventDefault();
       const newUsername = document.getElementById('editUsername').value.trim();
       const newBio = document.getElementById('editBio').value.trim();
+      const avatarUrlInput = document.getElementById('editAvatarUrl').value.trim();
       const avatarSeed = document.getElementById('editAvatarSeed').value.trim();
 
       try {
@@ -192,9 +199,13 @@
           username: newUsername,
           bio: newBio 
         };
-        if (avatarSeed) {
+
+        if (avatarUrlInput) {
+          updateData.avatarUrl = avatarUrlInput;
+        } else if (avatarSeed) {
           updateData.avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(avatarSeed)}`;
         }
+
         await updateDoc(userRef, updateData);
         await loadUserData(currentUser.uid);
         editModal.classList.add('hidden');
