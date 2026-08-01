@@ -22,7 +22,7 @@
   <!-- Toast Notification -->
   <div id="toast" class="fixed top-5 right-5 z-50 hidden bg-slate-800/95 border border-cyan-500/40 text-cyan-400 text-xs font-bold px-4 py-3 rounded-2xl shadow-xl backdrop-blur-md flex items-center gap-2 transition-all">
     <i class="fa-solid fa-circle-check text-emerald-400"></i>
-    <span id="toastMsg">UID Copied to Clipboard!</span>
+    <span id="toastMsg">Action Successful!</span>
   </div>
 
   <!-- Navbar -->
@@ -117,14 +117,30 @@
           <textarea id="editBio" rows="3" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Tell something about yourself..."></textarea>
         </div>
 
+        <!-- OPTION 1: Direct Image URL -->
+        <div>
+          <label class="block text-[11px] sm:text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+            <i class="fa-solid fa-link"></i> Direct Image URL (PFP)
+          </label>
+          <input type="url" id="editAvatarUrl" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition placeholder-slate-500" placeholder="https://example.com/my-photo.png">
+          <p class="text-[10px] text-slate-400 mt-1">Paste any direct image link from Imgur, PostImages, or web.</p>
+        </div>
+
+        <div class="relative flex py-1 items-center">
+          <div class="flex-grow border-t border-slate-800"></div>
+          <span class="flex-shrink mx-2 text-[10px] text-slate-500 font-bold uppercase">OR</span>
+          <div class="flex-grow border-t border-slate-800"></div>
+        </div>
+
+        <!-- OPTION 2: Seed Generator -->
         <div>
           <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Avatar Seed (Keyword)</label>
-          <input type="text" id="editAvatarSeed" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Type anything to change avatar">
+          <input type="text" id="editAvatarSeed" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition placeholder-slate-500" placeholder="Type anything to generate avatar">
         </div>
 
         <div class="flex justify-end gap-2 pt-2">
           <button type="button" id="cancelEditBtn" class="flex-1 sm:flex-none px-4 py-2 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 rounded-xl transition">Cancel</button>
-          <button type="submit" class="flex-1 sm:flex-none px-5 py-2 text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded-xl shadow-lg shadow-cyan-500/20 transition">Save</button>
+          <button type="submit" class="flex-1 sm:flex-none px-5 py-2 text-xs font-black bg-gradient-to-r from-cyan-500 to-blue-600 text-slate-950 rounded-xl shadow-lg shadow-cyan-500/20 transition">Save Changes</button>
         </div>
       </form>
     </div>
@@ -178,20 +194,26 @@
           document.getElementById('userUsername').innerText = data.username || 'Survivor';
           document.getElementById('userEmail').innerText = data.email || currentUser.email;
           document.getElementById('userBio').innerText = `"${data.bio || 'New survivor in Arcanix world.'}"`;
-          document.getElementById('profileAvatar').src = data.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.username}`;
+          
+          const avatarUrl = data.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.username}`;
+          document.getElementById('profileAvatar').src = avatarUrl;
           document.getElementById('userLevel').innerText = data.level || 1;
           
           const xp = data.xp || 0;
           document.getElementById('userXp').innerText = xp;
           document.getElementById('xpBar').style.width = `${Math.min(xp, 100)}%`;
+          
           document.getElementById('editBio').value = data.bio || '';
+          if (data.avatarUrl && !data.avatarUrl.includes('dicebear.com')) {
+            document.getElementById('editAvatarUrl').value = data.avatarUrl;
+          }
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
     }
 
-    // COPY UID TO CLIPBOARD LOGIC
+    // COPY UID TO CLIPBOARD
     document.getElementById('copyUidBtn').onclick = () => {
       const uidText = document.getElementById('userUid').innerText;
       if (uidText && uidText !== 'Loading...') {
@@ -217,14 +239,20 @@
     document.getElementById('editForm').onsubmit = async (e) => {
       e.preventDefault();
       const newBio = document.getElementById('editBio').value.trim();
+      const directUrl = document.getElementById('editAvatarUrl').value.trim();
       const avatarSeed = document.getElementById('editAvatarSeed').value.trim();
 
       try {
         const userRef = doc(db, "users", currentUser.uid);
         const updateData = { bio: newBio };
-        if (avatarSeed) {
+
+        // Direct URL ko priority do, agar empty ho to seed check karo
+        if (directUrl) {
+          updateData.avatarUrl = directUrl;
+        } else if (avatarSeed) {
           updateData.avatarUrl = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(avatarSeed)}`;
         }
+
         await updateDoc(userRef, updateData);
         await loadUserData(currentUser.uid);
         editModal.classList.add('hidden');
