@@ -7,13 +7,8 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    #chatMessages::-webkit-scrollbar {
-      width: 4px;
-    }
-    #chatMessages::-webkit-scrollbar-thumb {
-      background: rgba(100, 116, 139, 0.2);
-      border-radius: 4px;
-    }
+    #chatMessages::-webkit-scrollbar { width: 4px; }
+    #chatMessages::-webkit-scrollbar-thumb { background: rgba(100, 116, 139, 0.2); border-radius: 4px; }
   </style>
 </head>
 <body class="bg-slate-950 text-slate-100 h-[100dvh] flex flex-col font-sans antialiased overflow-hidden pb-16 sm:pb-0">
@@ -28,7 +23,6 @@
       </div>
     </div>
 
-    <!-- Desktop Navigation -->
     <div class="hidden sm:flex items-center gap-6 text-sm font-semibold text-slate-400">
       <a href="dashboard.html" class="hover:text-cyan-400 transition">Worlds</a>
       <a href="chat.html" class="text-cyan-400 border-b-2 border-cyan-400 pb-1">Global Chat</a>
@@ -39,14 +33,10 @@
   <!-- Chat Container -->
   <main class="flex-1 max-w-4xl w-full mx-auto p-3 sm:p-6 flex flex-col justify-between overflow-hidden relative">
     
-    <!-- Messages Scrollable Box -->
     <div id="chatMessages" class="flex-1 overflow-y-auto space-y-3 pr-1 pb-4 flex flex-col">
-      <div class="text-center text-xs text-slate-500 py-4">
-        Connecting to global chat stream...
-      </div>
+      <div class="text-center text-xs text-slate-500 py-4">Connecting to global chat stream...</div>
     </div>
 
-    <!-- Message Input Bar -->
     <form id="chatForm" class="mt-2 flex items-center gap-2 bg-slate-900/90 border border-slate-800 p-1.5 sm:p-2 rounded-2xl backdrop-blur-xl shadow-lg shrink-0">
       <input type="text" id="messageInput" placeholder="Write a message..." required autocomplete="off"
              class="flex-1 bg-transparent px-4 py-2 sm:py-2.5 text-xs sm:text-sm text-white placeholder-slate-500 focus:outline-none">
@@ -57,7 +47,6 @@
 
   </main>
 
-  <!-- Mobile Bottom Navigation Bar -->
   <div class="sm:hidden fixed bottom-0 left-0 right-0 bg-slate-900/95 border-t border-slate-800 backdrop-blur-xl z-40 flex justify-around p-2">
     <a href="dashboard.html" class="flex flex-col items-center py-1 text-slate-400">
       <i class="fa-solid fa-gamepad text-base"></i>
@@ -85,18 +74,8 @@
     let currentUser = null;
     let userProfile = { username: 'Survivor', avatarUrl: '' };
 
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
-    }
-
     onAuthStateChanged(auth, (user) => {
-      if (!user) {
-        window.location.href = 'index.html';
-        return;
-      }
+      if (!user) return window.location.href = 'index.html';
       currentUser = user;
 
       userProfile.username = user.displayName || user.email.split('@')[0];
@@ -108,7 +87,7 @@
           if (data.username) userProfile.username = data.username;
           if (data.avatarUrl) userProfile.avatarUrl = data.avatarUrl;
         }
-      }).catch(err => console.error("Error fetching profile:", err));
+      });
 
       const q = query(collection(db, "globalChat"), orderBy("createdAt", "asc"), limit(100));
       
@@ -123,12 +102,8 @@
         snapshot.forEach((docSnap) => {
           const msg = docSnap.data();
           const isMe = msg.uid === currentUser.uid;
-
           const msgElement = document.createElement('div');
           msgElement.className = `flex gap-2 items-end ${isMe ? 'justify-end' : 'justify-start'}`;
-
-          const fallbackAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(msg.username || 'User')}`;
-          const currentAvatar = msg.avatarUrl ? msg.avatarUrl : fallbackAvatar;
 
           if (isMe) {
             msgElement.innerHTML = `
@@ -143,8 +118,9 @@
             `;
           } else {
             msgElement.innerHTML = `
-              <a href="profile.html?uid=${msg.uid}" class="shrink-0 mb-4 hover:opacity-80 transition" title="View Profile">
-                <img src="${currentAvatar}" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800">
+              <a href="profile.html?uid=${msg.uid}" class="shrink-0 mb-4 hover:opacity-80 transition">
+                <img src="${msg.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + (msg.username || 'User')}" 
+                     class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800">
               </a>
               <div class="max-w-[78%] sm:max-w-[70%] space-y-1">
                 <a href="profile.html?uid=${msg.uid}" class="text-[10px] font-bold text-slate-400 pl-1 hover:text-cyan-400 hover:underline transition">
@@ -161,9 +137,6 @@
         });
 
         chatMessages.scrollTop = chatMessages.scrollHeight;
-      }, (error) => {
-        console.error("Chat listener error:", error);
-        chatMessages.innerHTML = `<div class="text-center text-xs text-red-400 my-auto">Unable to load messages.</div>`;
       });
     });
 
@@ -186,6 +159,11 @@
         console.error("Error sending message:", err);
       }
     };
+
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag));
+    }
   </script>
 </body>
 </html>
