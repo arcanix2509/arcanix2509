@@ -85,8 +85,18 @@
     let currentUser = null;
     let userProfile = { username: 'Survivor', avatarUrl: '' };
 
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, 
+        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
+      );
+    }
+
     onAuthStateChanged(auth, (user) => {
-      if (!user) return window.location.href = 'index.html';
+      if (!user) {
+        window.location.href = 'index.html';
+        return;
+      }
       currentUser = user;
 
       userProfile.username = user.displayName || user.email.split('@')[0];
@@ -117,6 +127,9 @@
           const msgElement = document.createElement('div');
           msgElement.className = `flex gap-2 items-end ${isMe ? 'justify-end' : 'justify-start'}`;
 
+          const fallbackAvatar = `https://api.dicebear.com/7.x/bottts/svg?seed=${encodeURIComponent(msg.username || 'User')}`;
+          const currentAvatar = msg.avatarUrl ? msg.avatarUrl : fallbackAvatar;
+
           if (isMe) {
             msgElement.innerHTML = `
               <div class="max-w-[78%] sm:max-w-[70%] space-y-1 text-right">
@@ -131,8 +144,7 @@
           } else {
             msgElement.innerHTML = `
               <a href="profile.html?uid=${msg.uid}" class="shrink-0 mb-4 hover:opacity-80 transition" title="View Profile">
-                <img src="${msg.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + (msg.username || 'User')}" 
-                     class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800">
+                <img src="${currentAvatar}" alt="Avatar" class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800">
               </a>
               <div class="max-w-[78%] sm:max-w-[70%] space-y-1">
                 <a href="profile.html?uid=${msg.uid}" class="text-[10px] font-bold text-slate-400 pl-1 hover:text-cyan-400 hover:underline transition">
@@ -151,7 +163,7 @@
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }, (error) => {
         console.error("Chat listener error:", error);
-        chatMessages.innerHTML = `<div class="text-center text-xs text-red-400 my-auto">Unable to load messages. Check console/network connection.</div>`;
+        chatMessages.innerHTML = `<div class="text-center text-xs text-red-400 my-auto">Unable to load messages.</div>`;
       });
     });
 
@@ -174,13 +186,6 @@
         console.error("Error sending message:", err);
       }
     };
-
-    function escapeHTML(str) {
-      if (!str) return '';
-      return str.replace(/[&<>'"]/g, 
-        tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)
-      );
-    }
   </script>
 </body>
 </html>
