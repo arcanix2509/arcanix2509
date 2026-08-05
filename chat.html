@@ -89,11 +89,9 @@
       if (!user) return window.location.href = 'index.html';
       currentUser = user;
 
-      // Fallback initial details
       userProfile.username = user.displayName || user.email.split('@')[0];
       userProfile.avatarUrl = user.photoURL || `https://api.dicebear.com/7.x/bottts/svg?seed=${user.uid}`;
 
-      // 1. Fetch User Profile Data in Background (Firestore)
       getDoc(doc(db, "users", user.uid)).then((userDoc) => {
         if (userDoc.exists()) {
           const data = userDoc.data();
@@ -102,7 +100,6 @@
         }
       }).catch(err => console.error("Error fetching profile:", err));
 
-      // 2. Load Global Chat Messages (Collection Name fixed: 'globalChat')
       const q = query(collection(db, "globalChat"), orderBy("createdAt", "asc"), limit(100));
       
       onSnapshot(q, (snapshot) => {
@@ -121,22 +118,26 @@
           msgElement.className = `flex gap-2 items-end ${isMe ? 'justify-end' : 'justify-start'}`;
 
           if (isMe) {
-            // RIGHT SIDE (Logged-in User)
             msgElement.innerHTML = `
               <div class="max-w-[78%] sm:max-w-[70%] space-y-1 text-right">
                 <div class="bg-gradient-to-r from-cyan-600 to-blue-600 text-white rounded-2xl rounded-br-xs px-4 py-2.5 text-xs sm:text-sm shadow-md inline-block text-left break-words">
                   ${escapeHTML(msg.text)}
                 </div>
-                <div class="text-[9px] text-slate-500 pr-1">You (${escapeHTML(msg.username || 'Survivor')})</div>
+                <div class="text-[9px] text-slate-500 pr-1">
+                  <a href="profile.html" class="hover:underline hover:text-cyan-400 transition">You (${escapeHTML(msg.username || 'Survivor')})</a>
+                </div>
               </div>
             `;
           } else {
-            // LEFT SIDE (Other Users)
             msgElement.innerHTML = `
-              <img src="${msg.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + (msg.username || 'User')}" 
-                   class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800 shrink-0 mb-4">
+              <a href="profile.html?uid=${msg.uid}" class="shrink-0 mb-4 hover:opacity-80 transition" title="View Profile">
+                <img src="${msg.avatarUrl || 'https://api.dicebear.com/7.x/bottts/svg?seed=' + (msg.username || 'User')}" 
+                     class="w-7 h-7 rounded-full border border-slate-700 bg-slate-800">
+              </a>
               <div class="max-w-[78%] sm:max-w-[70%] space-y-1">
-                <div class="text-[10px] font-bold text-slate-400 pl-1">${escapeHTML(msg.username || 'Survivor')}</div>
+                <a href="profile.html?uid=${msg.uid}" class="text-[10px] font-bold text-slate-400 pl-1 hover:text-cyan-400 hover:underline transition">
+                  ${escapeHTML(msg.username || 'Survivor')}
+                </a>
                 <div class="bg-slate-800/90 border border-slate-700/60 text-slate-100 rounded-2xl rounded-bl-xs px-4 py-2.5 text-xs sm:text-sm shadow-md inline-block break-words">
                   ${escapeHTML(msg.text)}
                 </div>
@@ -147,7 +148,6 @@
           chatMessages.appendChild(msgElement);
         });
 
-        // Auto Scroll to Bottom
         chatMessages.scrollTop = chatMessages.scrollHeight;
       }, (error) => {
         console.error("Chat listener error:", error);
@@ -155,7 +155,6 @@
       });
     });
 
-    // Send Message Event
     chatForm.onsubmit = async (e) => {
       e.preventDefault();
       const text = messageInput.value.trim();
