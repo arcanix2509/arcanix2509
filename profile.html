@@ -170,21 +170,28 @@
 
     const loader = document.getElementById('loader');
     const editModal = document.getElementById('editModal');
+    const editBtn = document.getElementById('editProfileBtn');
     const toast = document.getElementById('toast');
     let currentUser = null;
+
+    // Read URL Parameters for target profile UID
+    const urlParams = new URLSearchParams(window.location.search);
+    const targetUid = urlParams.get('uid');
 
     onAuthStateChanged(auth, async (user) => {
       if (user) {
         currentUser = user;
-        document.getElementById('userUid').innerText = user.uid;
-        await loadUserData(user.uid);
+        const profileUidToFetch = targetUid ? targetUid : user.uid;
+        const isSelfProfile = (!targetUid || targetUid === user.uid);
+
+        await loadUserData(profileUidToFetch, isSelfProfile);
         loader.classList.add('hidden');
       } else {
         window.location.href = 'index.html';
       }
     });
 
-    async function loadUserData(uid) {
+    async function loadUserData(uid, isSelf) {
       try {
         const userRef = doc(db, "users", uid);
         const userSnap = await getDoc(userRef);
@@ -192,8 +199,9 @@
         if (userSnap.exists()) {
           const data = userSnap.data();
           document.getElementById('userUsername').innerText = data.username || 'Survivor';
-          document.getElementById('userEmail').innerText = data.email || currentUser.email;
+          document.getElementById('userEmail').innerText = isSelf ? (data.email || currentUser.email) : '••••••••@arcanix.com';
           document.getElementById('userBio').innerText = `"${data.bio || 'New survivor in Arcanix world.'}"`;
+          document.getElementById('userUid').innerText = uid;
           
           const avatarUrl = data.avatarUrl || `https://api.dicebear.com/7.x/bottts/svg?seed=${data.username}`;
           document.getElementById('profileAvatar').src = avatarUrl;
@@ -202,18 +210,25 @@
           const xp = data.xp || 0;
           document.getElementById('userXp').innerText = xp;
           document.getElementById('xpBar').style.width = `${Math.min(xp, 100)}%`;
-          
-          document.getElementById('editBio').value = data.bio || '';
-          if (data.avatarUrl && !data.avatarUrl.includes('dicebear.com')) {
-            document.getElementById('editAvatarUrl').value = data.avatarUrl;
+
+          if (!isSelf) {
+            editBtn.classList.add('hidden');
+          } else {
+            editBtn.classList.remove('hidden');
+            document.getElementById('editBio').value = data.bio || '';
+            if (data.avatarUrl && !data.avatarUrl.includes('dicebear.com')) {
+              document.getElementById('editAvatarUrl').value = data.avatarUrl;
+            }
           }
+        } else {
+          alert("Profile not found!");
+          window.location.href = 'dashboard.html';
         }
       } catch (err) {
         console.error("Error fetching user data:", err);
       }
     }
 
-    // COPY UID TO CLIPBOARD
     document.getElementById('copyUidBtn').onclick = () => {
       const uidText = document.getElementById('userUid').innerText;
       if (uidText && uidText !== 'Loading...') {
@@ -233,7 +248,7 @@
       }, 2500);
     }
 
-    document.getElementById('editProfileBtn').onclick = () => editModal.classList.toggle('hidden');
+    editBtn.onclick = () => editModal.classList.toggle('hidden');
     document.getElementById('cancelEditBtn').onclick = () => editModal.classList.add('hidden');
 
     document.getElementById('editForm').onsubmit = async (e) => {
@@ -246,7 +261,6 @@
         const userRef = doc(db, "users", currentUser.uid);
         const updateData = { bio: newBio };
 
-        // Direct URL ko priority do, agar empty ho to seed check karo
         if (directUrl) {
           updateData.avatarUrl = directUrl;
         } else if (avatarSeed) {
@@ -254,7 +268,7 @@
         }
 
         await updateDoc(userRef, updateData);
-        await loadUserData(currentUser.uid);
+        await loadUserData(currentUser.uid, true);
         editModal.classList.add('hidden');
         showToast("Profile updated successfully!");
       } catch (err) {
