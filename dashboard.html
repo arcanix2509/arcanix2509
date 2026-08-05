@@ -33,7 +33,7 @@
   <!-- Container -->
   <main class="max-w-7xl mx-auto p-3 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8 mt-2 sm:mt-4">
     
-    <!-- User Card (Clickable to Profile) -->
+    <!-- User Card (Clickable to My Profile) -->
     <a href="profile.html" class="block bg-slate-900/60 border border-slate-800 hover:border-cyan-500/50 backdrop-blur-xl rounded-2xl p-4 sm:p-6 h-fit transition group">
       <div class="flex items-center gap-4">
         <img id="dashAvatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=Arcanix" class="w-14 h-14 sm:w-16 sm:h-16 rounded-full border-2 border-cyan-400 bg-slate-800 p-1 shrink-0">
@@ -113,6 +113,8 @@
 
         snapshot.forEach((docSnap) => {
           const w = docSnap.data();
+          const hostUidParam = w.hostUid ? `profile.html?uid=${w.hostUid}` : '#';
+          
           container.innerHTML += `
             <div class="bg-slate-900/80 border border-slate-800/90 hover:border-cyan-500/50 rounded-xl p-4 sm:p-5 transition flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
               <div>
@@ -120,7 +122,11 @@
                   <h4 class="font-bold text-sm sm:text-lg text-white">${w.worldName || 'Survival Realm'}</h4>
                   <span class="text-[9px] sm:text-[10px] bg-cyan-500/20 text-cyan-300 font-bold px-2 py-0.5 rounded border border-cyan-500/30">${w.region || 'GLOBAL'}</span>
                 </div>
-                <p class="text-xs text-slate-400 mt-1">Host: <span class="text-slate-200 font-semibold">${w.hostName || 'Unknown'}</span> | Ping: <span class="text-emerald-400">${w.ping || '30'}ms</span></p>
+                <p class="text-xs text-slate-400 mt-1">Host: 
+                  <a href="${hostUidParam}" class="text-cyan-400 font-semibold hover:underline">
+                    ${w.hostName || 'Unknown'}
+                  </a> | Ping: <span class="text-emerald-400">${w.ping || '30'}ms</span>
+                </p>
               </div>
               <div class="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end pt-2 sm:pt-0 border-t border-slate-800/80 sm:border-none">
                 <span class="text-xs text-slate-400"><strong class="text-white">${w.playerCount || 1}</strong>/${w.maxPlayers || 4} Players</span>
