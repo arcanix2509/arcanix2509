@@ -58,7 +58,7 @@
         <!-- Avatar Container -->
         <div class="relative">
           <div class="w-24 h-24 sm:w-32 sm:h-32 rounded-2xl bg-slate-800 border-2 border-cyan-500/50 overflow-hidden shadow-xl shadow-cyan-500/10">
-            <img id="profileAvatar" src="" alt="Avatar" class="w-full h-full object-cover">
+            <img id="profileAvatar" src="data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg'/>" alt="Avatar" class="w-full h-full object-cover">
           </div>
           <span class="absolute -bottom-2 -right-2 bg-slate-900 text-cyan-400 text-[10px] sm:text-xs font-black px-2.5 py-1 rounded-lg border border-cyan-500/30">
             LVL <span id="userLevel">1</span>
@@ -113,13 +113,12 @@
       </h2>
       <form id="editForm" class="space-y-4">
         <div>
-          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Bio</label>
+          <label for="editBio" class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Bio</label>
           <textarea id="editBio" rows="3" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl p-3 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition" placeholder="Tell something about yourself..."></textarea>
         </div>
 
-        <!-- OPTION 1: Direct Image URL -->
         <div>
-          <label class="block text-[11px] sm:text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+          <label for="editAvatarUrl" class="block text-[11px] sm:text-xs font-bold text-cyan-400 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
             <i class="fa-solid fa-link"></i> Direct Image URL (PFP)
           </label>
           <input type="url" id="editAvatarUrl" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition placeholder-slate-500" placeholder="https://example.com/my-photo.png">
@@ -132,9 +131,8 @@
           <div class="flex-grow border-t border-slate-800"></div>
         </div>
 
-        <!-- OPTION 2: Seed Generator -->
         <div>
-          <label class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Avatar Seed (Keyword)</label>
+          <label for="editAvatarSeed" class="block text-[11px] sm:text-xs font-bold text-slate-300 uppercase tracking-wider mb-1.5">Avatar Seed (Keyword)</label>
           <input type="text" id="editAvatarSeed" class="w-full bg-slate-800/80 border border-slate-700 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:outline-none focus:border-cyan-400 transition placeholder-slate-500" placeholder="Type anything to generate avatar">
         </div>
 
@@ -174,22 +172,16 @@
     const toast = document.getElementById('toast');
     let currentUser = null;
 
-    // Read URL Parameters for target profile UID
     const urlParams = new URLSearchParams(window.location.search);
     const targetUid = urlParams.get('uid');
 
-    onAuthStateChanged(auth, async (user) => {
-      if (user) {
-        currentUser = user;
-        const profileUidToFetch = targetUid ? targetUid : user.uid;
-        const isSelfProfile = (!targetUid || targetUid === user.uid);
-
-        await loadUserData(profileUidToFetch, isSelfProfile);
-        loader.classList.add('hidden');
-      } else {
-        window.location.href = 'index.html';
-      }
-    });
+    function showToast(msg) {
+      document.getElementById('toastMsg').innerText = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => {
+        toast.classList.add('hidden');
+      }, 2500);
+    }
 
     async function loadUserData(uid, isSelf) {
       try {
@@ -229,6 +221,19 @@
       }
     }
 
+    onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        currentUser = user;
+        const profileUidToFetch = targetUid ? targetUid : user.uid;
+        const isSelfProfile = (!targetUid || targetUid === user.uid);
+
+        await loadUserData(profileUidToFetch, isSelfProfile);
+        loader.classList.add('hidden');
+      } else {
+        window.location.href = 'index.html';
+      }
+    });
+
     document.getElementById('copyUidBtn').onclick = () => {
       const uidText = document.getElementById('userUid').innerText;
       if (uidText && uidText !== 'Loading...') {
@@ -239,14 +244,6 @@
         });
       }
     };
-
-    function showToast(msg) {
-      document.getElementById('toastMsg').innerText = msg;
-      toast.classList.remove('hidden');
-      setTimeout(() => {
-        toast.classList.add('hidden');
-      }, 2500);
-    }
 
     editBtn.onclick = () => editModal.classList.toggle('hidden');
     document.getElementById('cancelEditBtn').onclick = () => editModal.classList.add('hidden');
